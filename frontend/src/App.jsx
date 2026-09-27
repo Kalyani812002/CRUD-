@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import {
-  ArrowDownWideNarrow,
   CalendarDays,
   Check,
   CheckCheck,
@@ -11,6 +10,7 @@ import {
   House,
   LayoutDashboard,
   ListTodo,
+  LoaderCircle,
   Pencil,
   Plus,
   Search,
@@ -33,7 +33,7 @@ async function apiRequest(path, options = {}) {
 const views = [
   { id: 'all', label: 'All tasks', icon: LayoutDashboard },
   { id: 'todo', label: 'Pending', icon: Clock3 },
-  { id: 'in-progress', label: 'In progress', icon: ArrowDownWideNarrow },
+  { id: 'in-progress', label: 'In progress', icon: LoaderCircle },
   { id: 'done', label: 'Completed', icon: CheckCheck },
 ]
 
@@ -41,7 +41,7 @@ const sidebarItems = [
   { id: 'dashboard', label: 'Dashboard', icon: House },
   { id: 'all', label: 'All Tasks', icon: ClipboardList },
   { id: 'todo', label: 'Pending', icon: Clock3 },
-  { id: 'in-progress', label: 'In Process', icon: ArrowDownWideNarrow },
+  { id: 'in-progress', label: 'In Process', icon: LoaderCircle },
   { id: 'done', label: 'Completed', icon: CheckCheck },
   { id: 'create', label: 'Create Task', icon: Plus, isAction: true },
   { id: 'trash', label: 'Trash', icon: Trash2 },
@@ -288,7 +288,7 @@ function App() {
           <section className="summary-grid" aria-label="Task summary">
             <div className="summary-item summary-total"><div className="summary-icon"><ListTodo size={18} /></div><span className="summary-label">Total tasks</span><strong>{counts.all}</strong><span className="summary-note">in your workspace</span></div>
             <div className="summary-item summary-pending"><div className="summary-icon"><Clock3 size={18} /></div><span className="summary-label">Pending</span><strong>{counts.todo}</strong><span className="summary-note">waiting to begin</span></div>
-            <div className="summary-item summary-progress"><div className="summary-icon"><ArrowDownWideNarrow size={18} /></div><span className="summary-label">In progress</span><strong>{counts['in-progress']}</strong><span className="summary-note">moving forward</span></div>
+            <div className="summary-item summary-progress"><div className="summary-icon"><LoaderCircle size={18} /></div><span className="summary-label">In progress</span><strong>{counts['in-progress']}</strong><span className="summary-note">moving forward</span></div>
             <div className="summary-item summary-done"><div className="summary-icon"><CheckCheck size={18} /></div><span className="summary-label">Completed</span><strong>{counts.done}</strong><span className="summary-note">finished tasks</span></div>
           </section>
 

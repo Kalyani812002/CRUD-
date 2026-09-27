@@ -1,28 +1,47 @@
 :root {
-  font-family: 'DM Sans', sans-serif;
-  color: #3c4a41;
-  background: #fff;
+  font-family: 'DM Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color: #334155;
+  background: #f6f7fb;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-optical-sizing: auto;
   font-weight: 400;
-  --display: 'Fraunces', Georgia, serif;
-  --color-ink: #26362e;
-  --color-text: #48564d;
-  --color-muted: #7d897f;
-  --color-line: #e4e9e3;
-  --color-canvas: #f7f8f6;
-  --color-sidebar: #f1f4ef;
-  --color-accent: #cf6045;
-  --color-accent-hover: #b95039;
-  --radius-card: 16px;
+
+  --display: 'Fraunces', Georgia, 'Times New Roman', serif;
+
+  /* Core palette — cool slate neutrals */
+  --color-ink: #0f172a;
+  --color-text: #334155;
+  --color-muted: #64748b;
+  --color-line: #e6e9f1;
+  --color-line-strong: #d7dcea;
+  --color-canvas: #f6f7fb;
+  --color-surface: #ffffff;
+
+  /* Brand — indigo to violet */
+  --color-accent: #6366f1;
+  --color-accent-hover: #4f46e5;
+  --gradient-brand: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+
+  /* Status tones */
+  --tone-total: #6366f1;
+  --tone-pending: #f59e0b;
+  --tone-progress: #0ea5e9;
+  --tone-done: #10b981;
+  --tone-danger: #e11d48;
+
+  /* Radii */
+  --radius-card: 18px;
   --radius-control: 999px;
-  --shadow-soft: 0 1px 2px rgba(36, 55, 44, 0.05), 0 10px 24px -16px rgba(36, 55, 44, 0.22);
-  --shadow-card: 0 1px 2px rgba(36, 55, 44, 0.04), 0 14px 30px -20px rgba(36, 55, 44, 0.28);
-  --shadow-card-hover: 0 2px 4px rgba(36, 55, 44, 0.05), 0 28px 56px -24px rgba(36, 55, 44, 0.34), 0 10px 22px -14px rgba(36, 55, 44, 0.16);
-  --shadow-popover: 0 44px 88px -32px rgba(23, 38, 31, 0.42), 0 12px 32px rgba(23, 38, 31, 0.16);
+
+  /* Elevation */
+  --shadow-soft: 0 1px 2px rgba(15, 23, 42, 0.04), 0 12px 24px -18px rgba(15, 23, 42, 0.24);
+  --shadow-card: 0 1px 2px rgba(15, 23, 42, 0.04), 0 18px 34px -24px rgba(15, 23, 42, 0.28);
+  --shadow-card-hover: 0 2px 4px rgba(15, 23, 42, 0.05), 0 26px 50px -24px rgba(15, 23, 42, 0.34), 0 14px 28px -18px rgba(99, 102, 241, 0.22);
+  --shadow-popover: 0 48px 96px -32px rgba(15, 23, 42, 0.45), 0 16px 40px rgba(15, 23, 42, 0.18);
+  --ease-premium: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 * {
@@ -32,7 +51,7 @@
 html {
   min-width: 320px;
   min-height: 100%;
-  background: #fff;
+  background: #f6f7fb;
 }
 
 body {
@@ -54,13 +73,13 @@ button {
 }
 
 ::selection {
-  color: #26372f;
-  background: #f4d7c9;
+  color: #fff;
+  background: #6366f1;
 }
 
 html {
   scrollbar-width: thin;
-  scrollbar-color: #cfd8ce transparent;
+  scrollbar-color: #c3cadd transparent;
 }
 
 ::-webkit-scrollbar {
@@ -75,11 +94,11 @@ html {
 ::-webkit-scrollbar-thumb {
   border: 2px solid transparent;
   border-radius: 999px;
-  background: #cfd8ce;
+  background: #c3cadd;
   background-clip: content-box;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #b9c4b8;
+  background: #a9b2cc;
   background-clip: content-box;
 }
