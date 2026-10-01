@@ -1274,3 +1274,551 @@ textarea:focus-visible {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ============================================================
+   Login page & session footer
+   New additive styles only — existing dashboard rules untouched
+   ============================================================ */
+
+.login-shell {
+  display: grid;
+  min-height: 100vh;
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+  background: var(--color-canvas);
+}
+
+.login-brand-panel {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 34px;
+  padding: clamp(30px, 5vw, 54px);
+  overflow: hidden;
+  color: #cbd5e1;
+  background:
+    radial-gradient(140% 90% at 0% 0%, rgba(99, 102, 241, 0.28) 0%, rgba(99, 102, 241, 0) 55%),
+    radial-gradient(120% 80% at 100% 100%, rgba(139, 92, 246, 0.16) 0%, rgba(139, 92, 246, 0) 50%),
+    linear-gradient(180deg, #141b36 0%, #0d1226 100%);
+  box-shadow: 10px 0 36px -28px rgba(15, 23, 42, 0.9);
+}
+
+.login-brand-panel .brand {
+  margin: 0;
+}
+
+.login-brand-copy h1 {
+  margin: 0;
+  color: #f8fafc;
+  font-family: var(--display);
+  font-size: clamp(30px, 3.4vw, 40px);
+  font-weight: 600;
+  line-height: 1.14;
+  letter-spacing: -0.02em;
+}
+
+.login-brand-copy p:not(.eyebrow) {
+  max-width: 400px;
+  margin: 12px 0 0;
+  color: rgba(203, 213, 225, 0.78);
+  font-size: 13.5px;
+  line-height: 1.6;
+}
+
+.login-brand-foot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  color: rgba(148, 163, 184, 0.75);
+  font-family: var(--display);
+  font-size: 12.5px;
+  font-style: italic;
+  letter-spacing: 0.01em;
+}
+
+.login-main {
+  display: grid;
+  min-width: 0;
+  place-items: center;
+  padding: clamp(24px, 5vw, 56px);
+  background:
+    radial-gradient(1100px 520px at 85% -10%, #eef2ff 0%, rgba(238, 242, 255, 0) 60%),
+    radial-gradient(900px 500px at 110% 110%, #f5f3ff 0%, rgba(245, 243, 255, 0) 55%),
+    var(--color-canvas);
+}
+
+.login-card {
+  width: min(440px, 100%);
+  padding: clamp(26px, 4vw, 38px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 24px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 44px 80px -44px rgba(15, 23, 42, 0.4);
+  animation: rise-in 300ms var(--ease-premium) both;
+}
+
+.login-card-header {
+  margin-bottom: 22px;
+}
+
+.login-card-header .eyebrow {
+  margin-bottom: 6px;
+}
+
+.login-card-header h2 {
+  margin: 0;
+  color: var(--color-ink);
+  font-family: var(--display);
+  font-size: 25px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+.login-subtitle {
+  margin: 8px 0 0;
+  color: var(--color-muted);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.password-wrap {
+  position: relative;
+  display: block;
+  min-width: 0;
+}
+
+.password-wrap input {
+  padding-right: 44px;
+}
+
+.password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 5px;
+  display: grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  padding: 0;
+  transform: translateY(-50%);
+  border: 0;
+  border-radius: var(--radius-control);
+  color: var(--color-muted);
+  background: transparent;
+  cursor: pointer;
+  transition: color 160ms ease, background 160ms ease;
+}
+
+.password-toggle:hover {
+  color: var(--color-accent-hover);
+  background: #eef2ff;
+}
+
+.login-actions {
+  justify-content: stretch;
+}
+
+.login-submit {
+  width: 100%;
+}
+
+.login-hint {
+  margin: 18px 0 0;
+  padding: 10px 14px;
+  border: 1px dashed var(--color-line-strong);
+  border-radius: 14px;
+  color: var(--color-muted);
+  background: #fafbff;
+  font-size: 11.5px;
+  letter-spacing: 0.01em;
+  text-align: center;
+}
+
+.login-hint strong {
+  color: var(--color-ink);
+  font-weight: 700;
+}
+
+.login-hint code {
+  padding: 1px 5px;
+  border-radius: 6px;
+  color: var(--color-ink);
+  background: #eef2ff;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 10.5px;
+  font-weight: 600;
+}
+
+/* ---------- Google social login ---------- */
+
+.login-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 22px 0 16px;
+  color: var(--color-muted);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+}
+
+.login-divider::before,
+.login-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--color-line-strong);
+}
+
+.google-signin {
+  display: flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+}
+
+.google-signin iframe {
+  margin: 0;
+}
+
+.google-login-note {
+  margin-top: 0;
+}
+
+/* ---------- Sidebar session footer ---------- */
+
+.sidebar-footer {
+  display: grid;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid rgba(148, 163, 184, 0.16);
+}
+
+.sidebar-user {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 10px;
+  padding: 0 13px;
+}
+
+.sidebar-user-avatar {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 10px 10px 10px 4px;
+  color: #fff;
+  background: var(--gradient-brand);
+  box-shadow: 0 8px 16px -8px rgba(99, 102, 241, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.sidebar-user-meta {
+  display: grid;
+  min-width: 0;
+  line-height: 1.3;
+}
+
+.sidebar-user-meta strong {
+  overflow: hidden;
+  color: #f1f5f9;
+  font-size: 12.5px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sidebar-user-meta small {
+  color: rgba(148, 163, 184, 0.85);
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.logout-item:hover {
+  color: #fecdd3;
+  border-color: rgba(251, 113, 133, 0.35);
+  background: rgba(225, 29, 72, 0.16);
+}
+
+/* ---------- Reports: user-wise statistics ---------- */
+
+.stats-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius-card);
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 20px 36px -30px rgba(79, 70, 229, 0.35);
+  animation: rise-in 460ms 80ms var(--ease-premium) both;
+}
+
+.stats-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.stats-table caption {
+  text-align: left;
+}
+
+.stats-table thead th {
+  padding: 14px 18px;
+  border-bottom: 1px solid #eef1f7;
+  color: var(--color-muted);
+  background: #fafbff;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-align: left;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.stats-table tbody td,
+.stats-table tfoot td {
+  padding: 14px 18px;
+  border-bottom: 1px solid #eef1f7;
+  color: #475569;
+}
+
+.stats-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.stats-table tbody tr:hover td {
+  background: #fafbff;
+}
+
+.stats-table tfoot td {
+  border-top: 1px solid var(--color-line-strong);
+  border-bottom: none;
+  color: var(--color-ink);
+  background: #f8f9ff;
+  font-weight: 700;
+}
+
+.stats-table .num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.stats-member {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 11px;
+}
+
+.stats-avatar {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 12px 12px 12px 4px;
+  color: #fff;
+  background: var(--gradient-brand);
+  box-shadow: 0 8px 16px -10px rgba(99, 102, 241, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.stats-avatar.is-unassigned {
+  color: #64748b;
+  background: #eef2f7;
+  border-color: #e2e8f0;
+  box-shadow: none;
+}
+
+.stats-member-meta {
+  display: grid;
+  min-width: 0;
+  line-height: 1.35;
+}
+
+.stats-member-meta strong {
+  overflow: hidden;
+  color: var(--color-ink);
+  font-size: 13px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.stats-member-meta small {
+  color: var(--color-muted);
+  font-size: 11px;
+}
+
+.stats-table .stats-total { color: #4338ca; font-weight: 700; }
+.stats-table .stats-pending { color: #b45309; font-weight: 700; }
+.stats-table .stats-progress { color: #0369a1; font-weight: 700; }
+.stats-table .stats-done { color: #047857; font-weight: 700; }
+
+.stats-rate {
+  display: flex;
+  min-width: 132px;
+  align-items: center;
+  gap: 10px;
+}
+
+.stats-bar {
+  flex: 1;
+  height: 7px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #eef1f7;
+}
+
+.stats-bar-fill {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #6366f1, #8b5cf6);
+}
+
+.stats-rate strong {
+  min-width: 38px;
+  color: var(--color-ink);
+  font-size: 11.5px;
+  font-weight: 700;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Login responsive ---------- */
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.spin {
+  animation: spin 800ms linear infinite;
+}
+
+@media (max-width: 940px) {
+  .login-shell { grid-template-columns: minmax(0, 1fr); }
+  .login-brand-panel { gap: 24px; padding: 30px 28px; }
+  .login-brand-copy p:not(.eyebrow) { max-width: 560px; }
+  .login-brand-foot { display: none; }
+}
+
+@media (max-width: 720px) {
+  .sidebar-footer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 12px;
+    padding: 12px 2px 0;
+  }
+  .sidebar-user { padding: 0 2px; }
+  .login-brand-panel { padding: 24px 22px; }
+  .login-brand-copy h1 { font-size: clamp(26px, 6.5vw, 32px); }
+  .login-main { padding: 26px 16px 40px; }
+}
+
+@media (max-width: 500px) {
+  .sidebar-user-meta small { display: none; }
+  .login-card { padding: 24px 18px; border-radius: 20px; }
+  .login-card-header h2 { font-size: 22px; }
+}
+
+/* ============================================================
+   Responsive hardening — mobile / tablet / desktop
+   Additive rules only; every existing breakpoint above is unchanged.
+   ============================================================ */
+
+/* The Google sign-in iframe keeps the width it was rendered at; clamp it so
+   rotating or resizing the viewport can never cause horizontal overflow. */
+.google-signin iframe {
+  max-width: 100%;
+}
+
+/* Dynamic viewport units so full-height surfaces track the visible area on
+   browsers with collapsing toolbars. Older browsers ignore these declarations
+   and keep the vh fallbacks defined above. */
+.app-shell {
+  min-height: 100dvh;
+}
+
+.login-shell {
+  min-height: 100dvh;
+}
+
+.task-modal {
+  max-height: min(90dvh, 720px);
+}
+
+@media (min-width: 721px) {
+  /* Scoped above the mobile breakpoint so the mobile rule (height: auto)
+     for the top pill navigation stays in charge. */
+  .sidebar {
+    height: 100dvh;
+  }
+}
+
+/* Inputs below 16px trigger Safari/Chrome focus-zoom on phones, which makes
+   the page jump while typing. Keep controls readable at tablet/phone widths;
+   desktop sizing (13.5px) is unchanged. */
+@media (max-width: 940px) {
+  .form-field input,
+  .form-field textarea,
+  .form-field select,
+  .search-box input {
+    font-size: 16px;
+  }
+}
+
+/* Mobile chrome polish: hide the scrollbar beneath the horizontal pill nav —
+   the clipped last pill is the scroll affordance. */
+@media (max-width: 720px) {
+  .primary-nav {
+    scrollbar-width: none;
+  }
+
+  .primary-nav::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Extra-small phones (≤360px, e.g. 320px-wide devices): tighten gutters and
+   dialog padding so cards and modals keep usable width. */
+@media (max-width: 360px) {
+  .topbar {
+    padding: 0 12px;
+  }
+
+  .content-wrap {
+    padding: 18px 12px 16px;
+  }
+
+  .summary-grid {
+    gap: 8px;
+  }
+
+  .summary-item {
+    padding: 12px;
+  }
+
+  .modal-backdrop {
+    padding: 10px;
+  }
+
+  .task-modal {
+    padding: 18px;
+    border-radius: 18px;
+  }
+}

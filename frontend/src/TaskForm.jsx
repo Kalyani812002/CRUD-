@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import { Check } from 'lucide-react'
 
-function TaskForm({ errorMessage, initialTask, isSaving, onCancel, onSubmit }) {
+function TaskForm({ canAssign = false, errorMessage, initialTask, isSaving, onCancel, onSubmit, teamUsers = [] }) {
   const [title, setTitle] = useState(initialTask?.title ?? '')
   const [description, setDescription] = useState(initialTask?.description ?? '')
   const [status, setStatus] = useState(initialTask?.apiStatus ?? 'Pending')
+  const [assignee, setAssignee] = useState(initialTask?.assignee?._id ?? '')
   const [titleError, setTitleError] = useState('')
 
   function handleSubmit(event) {
@@ -16,7 +17,12 @@ function TaskForm({ errorMessage, initialTask, isSaving, onCancel, onSubmit }) {
     }
 
     setTitleError('')
-    onSubmit({ title: normalizedTitle, description: description.trim(), status })
+    onSubmit({
+      title: normalizedTitle,
+      description: description.trim(),
+      status,
+      ...(canAssign ? { assignee: assignee || null } : {}),
+    })
   }
 
   return (
@@ -61,6 +67,18 @@ function TaskForm({ errorMessage, initialTask, isSaving, onCancel, onSubmit }) {
           <option value="Done">Done</option>
         </select>
       </label>
+
+      {canAssign && (
+        <label className="form-field" htmlFor="task-assignee">
+          <span>Assignee <small>Optional</small></span>
+          <select id="task-assignee" onChange={(event) => setAssignee(event.target.value)} value={assignee}>
+            <option value="">Unassigned</option>
+            {teamUsers.map((user) => (
+              <option key={user.id} value={user.id}>{user.name} (@{user.username})</option>
+            ))}
+          </select>
+        </label>
+      )}
 
       <div className="modal-actions">
         <button className="cancel-button" disabled={isSaving} onClick={onCancel} type="button">Cancel</button>

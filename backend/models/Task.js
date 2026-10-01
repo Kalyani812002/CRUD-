@@ -21,6 +21,11 @@ const taskSchema = new mongoose.Schema({
     },
     default: 'Pending',
   },
+  assignee: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    default: null,
+  },
   createdAt: {
     type: Date,
     default: Date.now,

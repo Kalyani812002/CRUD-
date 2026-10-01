@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import {
+  BarChart3,
   CalendarDays,
   Check,
   CheckCheck,
@@ -11,24 +12,22 @@ import {
   LayoutDashboard,
   ListTodo,
   LoaderCircle,
+  LogOut,
   Pencil,
   Plus,
   Search,
   Trash2,
+  User,
+  Users as UsersIcon,
   X,
 } from 'lucide-react'
 import TaskForm from './TaskForm.jsx'
+import Users from './Users.jsx'
+import Reports from './Reports.jsx'
+import Login from './Login.jsx'
+import { clearSession, readSession } from './auth.js'
+import { apiRequest } from './api.js'
 import './App.css'
-const API_URL = 'https://crud-1-xp3y.onrender.com'
-async function apiRequest(path, options = {}) {
-  const response = await fetch(path, {
-    ...options,
-    headers: { 'Content-Type': 'application/json', ...options.headers },
-  })
-  const result = response.status === 204 ? null : await response.json()
-  if (!response.ok) throw new Error(result?.error ?? 'The request could not be completed.')
-  return result
-}
 
 const views = [
   { id: 'all', label: 'All tasks', icon: LayoutDashboard },
@@ -43,6 +42,8 @@ const sidebarItems = [
   { id: 'todo', label: 'Pending', icon: Clock3 },
   { id: 'in-progress', label: 'In Process', icon: LoaderCircle },
   { id: 'done', label: 'Completed', icon: CheckCheck },
+  { id: 'reports', label: 'Reports', icon: BarChart3 },
+  { id: 'users', label: 'Users', icon: UsersIcon, adminOnly: true },
   { id: 'create', label: 'Create Task', icon: Plus, isAction: true },
   { id: 'trash', label: 'Trash', icon: Trash2 },
 ]
@@ -75,6 +76,13 @@ function normalizeTask(task) {
     apiStatus,
     status: uiStatusByApiStatus[apiStatus] ?? task.status ?? 'todo',
     description: task.description ?? '',
+    assignee: task.assignee && typeof task.assignee === 'object'
+      ? {
+          _id: task.assignee._id ?? task.assignee.id,
+          name: task.assignee.name ?? '',
+          username: task.assignee.username ?? '',
+        }
+      : null,
   }
 }
 
@@ -90,6 +98,11 @@ function formatCreatedDate(value) {
 }
 
 function App() {
+  const [session, setSession] = useState(() => readSession())
+  // Session can be null (fresh browser / expired login) — the guard at the
+  // bottom of this function renders <Login> in that case, so every pre-guard
+  // read must tolerate null.
+  const isAdmin = session?.isAdmin === true
   const [tasks, setTasks] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [loadError, setLoadError] = useState('')
@@ -105,8 +118,14 @@ function App() {
   const [isFormOpen, setIsFormOpen] = useState(false)
   const [taskToDelete, setTaskToDelete] = useState(null)
   const [taskToView, setTaskToView] = useState(null)
+  const [teamUsers, setTeamUsers] = useState([])
+  // Non-admins never see the Users nav item; fall back to the task list if the
+  // view is somehow active without admin access (e.g. a stale session).
+  const isUsersView = activeView === 'users' && isAdmin
+  const isReportsView = activeView === 'reports'
 
   useEffect(() => {
+    if (!session) return undefined
     const controller = new AbortController()
     fetchTasks({ signal: controller.signal })
       .then(setTasks)
@@ -117,7 +136,39 @@ function App() {
         if (!controller.signal.aborted) setIsLoading(false)
       })
     return () => controller.abort()
-  }, [])
+  }, [session])
+
+  useEffect(() => {
+    if (!isAdmin) return undefined
+    let isActive = true
+    apiRequest('/api/users')
+      .then((result) => {
+        if (!isActive) return
+        setTeamUsers((Array.isArray(result) ? result : []).map((user) => ({ ...user, id: user._id ?? user.id })))
+      })
+      .catch(() => {
+        // The assignee dropdown stays empty; the rest of task CRUD still works.
+      })
+    return () => {
+      isActive = false
+    }
+  }, [isAdmin])
+
+  function handleLogout() {
+    clearSession()
+    setSession(null)
+    setTasks([])
+    setIsLoading(true)
+    setLoadError('')
+    setApiError('')
+    setSuccessMessage('')
+    setSearch('')
+    setActiveView('all')
+    setEditingTask(null)
+    setIsFormOpen(false)
+    setTaskToDelete(null)
+    setTaskToView(null)
+  }
 
   async function retryLoad() {
     setIsLoading(true)
@@ -131,12 +182,20 @@ function App() {
     }
   }
 
+  // Members (non-admin password accounts) only see tasks assigned to them.
+  const isMemberSession = session?.provider === 'credentials' && !isAdmin
+  const visibleTasks = isMemberSession
+    ? tasks.filter((task) => task.assignee && (
+        task.assignee._id === session.userId || task.assignee.username === session.username
+      ))
+    : tasks
+
   const counts = {
-    all: tasks.length,
-    todo: tasks.filter((task) => task.status === 'todo').length,
-    'in-progress': tasks.filter((task) => task.status === 'in-progress').length,
-    done: tasks.filter((task) => task.status === 'done').length,
-    dashboard: tasks.length,
+    all: visibleTasks.length,
+    todo: visibleTasks.filter((task) => task.status === 'todo').length,
+    'in-progress': visibleTasks.filter((task) => task.status === 'in-progress').length,
+    done: visibleTasks.filter((task) => task.status === 'done').length,
+    dashboard: visibleTasks.length,
     trash: 0,
   }
 
@@ -144,7 +203,7 @@ function App() {
     ?? sidebarItems.find((item) => item.id === activeView)
   const filteredTasks = activeView === 'trash'
     ? []
-    : tasks.filter((task) => {
+    : visibleTasks.filter((task) => {
         const matchesView = activeView === 'all' || activeView === 'dashboard' || task.status === activeView
         const matchesSearch = `${task.title} ${task.description}`
           .toLowerCase()
@@ -158,9 +217,12 @@ function App() {
     setApiError('')
     try {
       const isEditing = Boolean(editingTask)
+      const payload = { ...task }
+      // Members who create a task stay its assignee so it remains visible to them.
+      if (!isEditing && isMemberSession && session.userId) payload.assignee = session.userId
       const responseTask = await apiRequest(
         isEditing ? `/api/tasks/${encodeURIComponent(editingTask.id)}` : '/api/tasks',
-        { method: isEditing ? 'PUT' : 'POST', body: JSON.stringify(task) },
+        { method: isEditing ? 'PUT' : 'POST', body: JSON.stringify(payload) },
       )
       const savedTask = normalizeTask(responseTask)
       setLoadError('')
@@ -233,6 +295,8 @@ function App() {
     }
   }
 
+  if (!session) return <Login onLogin={setSession} />
+
   return (
     <div className="app-shell">
       <aside className="sidebar">
@@ -243,7 +307,7 @@ function App() {
 
         <div className="workspace-label">VIEWS</div>
         <nav className="primary-nav" aria-label="Task views">
-          {sidebarItems.map(({ id, label, icon: Icon, isAction }) => {
+          {sidebarItems.filter((item) => !item.adminOnly || isAdmin).map(({ id, label, icon: Icon, isAction }) => {
             const isActive = !isAction && activeView === id
             return (
               <button
@@ -255,11 +319,25 @@ function App() {
               >
                 <Icon size={18} strokeWidth={1.8} />
                 <span>{label}</span>
-                {!isAction && <span className="nav-count">{counts[id] ?? 0}</span>}
+                {!isAction && counts[id] !== undefined && <span className="nav-count">{counts[id]}</span>}
               </button>
             )
           })}
         </nav>
+
+        <div className="sidebar-footer">
+          <div className="sidebar-user">
+            <span className="sidebar-user-avatar" aria-hidden="true">{(session.name || session.username).slice(0, 1).toUpperCase()}</span>
+            <span className="sidebar-user-meta">
+              <strong>{session.name || session.username}</strong>
+              <small>Signed in</small>
+            </span>
+          </div>
+          <button className="nav-item logout-item" type="button" onClick={handleLogout}>
+            <LogOut size={18} strokeWidth={1.8} />
+            <span>Log out</span>
+          </button>
+        </div>
 
       </aside>
 
@@ -274,6 +352,18 @@ function App() {
         <div className="content-wrap">
           {apiError && <p className="api-error" role="alert">{apiError}</p>}
           {successMessage && <p className="api-success" role="status">{successMessage}</p>}
+          {isUsersView ? (
+            <Users />
+          ) : isReportsView ? (
+            <Reports
+              isLoading={isLoading}
+              loadError={loadError}
+              onRetry={retryLoad}
+              tasks={visibleTasks}
+              users={teamUsers}
+            />
+          ) : (
+            <>
           <section className="welcome-row">
             <div>
               <p className="eyebrow">YOUR DAY, IN FOCUS</p>
@@ -333,6 +423,7 @@ function App() {
                       </span>
                     </div>
                     <p className="task-card-description">{task.description || 'No description provided.'}</p>
+                    <div className="task-card-created"><User size={14} /><span>{task.assignee ? `Assigned to ${task.assignee.name || `@${task.assignee.username}`}` : 'Unassigned'}</span></div>
                     <div className="task-card-created"><CalendarDays size={14} /><span>Created {formatCreatedDate(task.createdAt)}</span></div>
                   </div>
                   <div className="task-card-actions">
@@ -352,6 +443,8 @@ function App() {
               )}
             </div>
           </section>
+            </>
+          )}
           <footer className="page-footer"><span>One thing at a time.</span><span className="footer-mark"><Check size={12} strokeWidth={3} /></span></footer>
         </div>
       </main>
@@ -361,11 +454,13 @@ function App() {
           <section className="task-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
             <header className="modal-header"><div><p className="eyebrow">MAKE IT HAPPEN</p><h2 id="modal-title">{editingTask ? 'Edit task' : 'Create a task'}</h2></div><button className="icon-button" type="button" aria-label="Close" onClick={() => setIsFormOpen(false)}><X size={19} /></button></header>
             <TaskForm
+              canAssign={isAdmin}
               errorMessage={formError}
               initialTask={editingTask}
               isSaving={isSaving}
               onCancel={() => setIsFormOpen(false)}
               onSubmit={saveTask}
+              teamUsers={teamUsers}
             />
           </section>
         </div>
@@ -395,6 +490,16 @@ function App() {
                 <span className={`status-badge status-${taskToView.status === 'todo' ? 'pending' : taskToView.status}`}>
                   {statusLabels[taskToView.status] ?? 'Pending'}
                 </span>
+              </div>
+              <div className="task-view-field">
+                <span className="task-view-label">Assignee</span>
+                <p className="task-view-value">
+                  {taskToView.assignee
+                    ? (taskToView.assignee.name
+                        ? `${taskToView.assignee.name} (@${taskToView.assignee.username})`
+                        : `@${taskToView.assignee.username}`)
+                    : 'Unassigned'}
+                </p>
               </div>
             </div>
             <div className="modal-actions">
