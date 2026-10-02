@@ -1,3 +1,5 @@
+import { API_BASE } from './api.js'
+
 // Frontend-only session helper for the Daymark login gate.
 // Credentials are checked in the browser — treat this as a UI gate, not real security.
 
@@ -216,7 +218,7 @@ export async function signInWithCredentials(username, password) {
 
   let response
   try {
-    response = await fetch('/api/auth/login', {
+    response = await fetch(`${API_BASE}/api/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username: normalizedUsername, password: submittedPassword }),

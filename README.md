@@ -74,6 +74,25 @@ npm run dev:backend
 
 Start the backend without file watching with `npm start`. The API defaults to port `3001`, matching the Vite proxy. To use another port with `npm run dev`, set `PORT` in the shell before starting the root command so both Vite and Express use the same value; keep `backend/.env` in sync when starting the backend separately.
 
+## Google Sign-In
+
+The login page can offer **Continue with Google** via Google Identity Services when `VITE_GOOGLE_CLIENT_ID` is set in `frontend/.env` (see `frontend/.env.example`).
+
+In [Google Cloud Console](https://console.cloud.google.com/apis/credentials) → **APIs & Services** → **Credentials** → your *Web application* OAuth client ID, add these **Authorized JavaScript origins** (otherwise Google rejects the request with an origin error):
+
+- `http://localhost:5173` — local development
+- `https://<project>.vercel.app` — the deployed Vercel frontend (use your real Vercel domain)
+
+## CORS
+
+The Express API only sets CORS headers for allowed origins:
+
+- `http://localhost:5173` (local frontend)
+- `https://*.vercel.app` (deployed frontend)
+- Any extra origins listed in `CORS_ALLOWED_ORIGINS` in `backend/.env` (comma-separated)
+
+`OPTIONS` preflights are answered with `204`, and the `Authorization` and `Content-Type` request headers are allowed for `GET, POST, PUT, PATCH, DELETE`.
+
 ## API Reference
 
 All task endpoints use MongoDB. Task status is one of `Pending`, `In Progress`, or `Done`.

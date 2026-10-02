@@ -1,6 +1,11 @@
-// Shared fetch helper for Daymark API calls (relative /api paths; Vite proxies in dev).
+// Shared fetch helper for Daymark API calls.
+// VITE_API_URL selects the API origin (production: https://crud-1-xp3y.onrender.com).
+// When it is empty, relative /api paths are used so the Vite dev proxy can
+// forward requests to the local backend.
+export const API_BASE = (import.meta.env.VITE_API_URL ?? '').trim().replace(/\/+$/, '')
+
 export async function apiRequest(path, options = {}) {
-  const response = await fetch(path, {
+  const response = await fetch(`${API_BASE}${path}`, {
     ...options,
     headers: { 'Content-Type': 'application/json', ...options.headers },
   })
