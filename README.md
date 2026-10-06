@@ -1,4 +1,4 @@
-# Daymark Task Management
+# CURD Task Management
 
 Daymark is a task management application with a responsive React interface and an Express API backed by MongoDB. It supports creating, viewing, editing, and deleting tasks, with status-based navigation and search.
 

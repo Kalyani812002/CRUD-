@@ -302,7 +302,7 @@ function App() {
       <aside className="sidebar">
         <a className="brand" href="#home" onClick={() => setActiveView('all')}>
           <span className="brand-mark"><Check size={18} strokeWidth={3} /></span>
-          <span>Daymark<span className="brand-period">.</span></span>
+          <span>CURD Task Management System<span className="brand-period">.</span></span>
         </a>
 
         <div className="workspace-label">VIEWS</div>
